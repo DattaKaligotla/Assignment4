@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+  <title>Assignment 4</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="main">
+    <div id="boxes" style="position: absolute; top: 300px;">
+      <div>
+        <label for="dataSelect">Select Statistic:</label>
+      </div>
+      <select class="select" id="selectData" onchange="onDataChanged()">
+        <option selected value="gdp">GDP ($ USD billions PPP)</option>
+        <option value="gdp_per_capita">GDP per capita in $ (PPP)</option>
+        <option value="health_expenditure">health expenditure % of GDP</option>
+        <option value="health_expenditure_per_person">health expenditure per person</option>
+        <option value="military">Military Spending as % of GDP</option>
+        <option value="unemployment">unemployment</option>
+      </select>
+      <div>
+        <label for="countries">Baseline Country:</label>
+      </div>
+      <input list="countryList" id="countryInput" placeholder="United States" onchange="onCountryChanged()">
+      <datalist id="countryList">
+    </div>
+
+    <div style="margin-left: 225px;">
+      <svg width="600" height="600" style="border: 1px solid #777;">
+      </svg>
+  </div>
+  </div>
+</body>
+
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="./main.js"></script>
+
+
