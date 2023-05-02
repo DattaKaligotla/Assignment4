@@ -1,0 +1,18 @@
+.line-path path {
+  fill: none;
+  opacity: 0.5;
+}
+
+.line-path text {
+  opacity: 0;
+}
+
+.line-path:hover text{
+  opacity: 1;
+}
+
+.line-path:hover path {
+  stroke: red;
+  stroke-width: 3px;
+  opacity: 1;
+}
