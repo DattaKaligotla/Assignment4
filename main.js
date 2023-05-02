@@ -5,9 +5,6 @@ function onDataChanged() {
   chartScales.x = domainChange(value);
   global(value);
   let temp = yValues();
-  if (temp[0] === "") {
-    temp[0] = 0;
-  }
   chartScales.y = temp;
   chartScales.value = value;
   loadChart();
@@ -59,11 +56,7 @@ function yValues() {
   let a = [];
   globalSortedData.forEach(e => {
     e.values.forEach(v => {
-      if (v[1] === "") {
-        a.push(0);
-      } else {
-       a.push(v[1]); 
-      }     
+       a.push(v[1]);     
     })
   });
   return d3.extent(a);
@@ -142,8 +135,8 @@ function filteredData(e, value) {
     a.push([2022, e.health_expenditure_2021_or_later]);
   } else if (value === "health_expenditure_per_person") {
     a.push([2015, e.health_expenditure_per_person_2015]);
-    a.push([2015, e.health_expenditure_per_person_2018]);
-    a.push([2015, e.health_expenditure_per_person_2019]);
+    a.push([2018, e.health_expenditure_per_person_2018]);
+    a.push([2019, e.health_expenditure_per_person_2019]);
   } else if (value === "military") {
     let num1 = e.military_2019.slice(0, e.military_2019.length - 1);
     let num2 = e.military_2021.slice(0, e.military_2021.length - 1);
@@ -220,6 +213,13 @@ function loadChart() {
         return "3px";
       } else {
         return "1.5px";
+      }
+    })
+    .attr("opacity", function(d) {
+      if (d.country === chartScales.country) {
+        return "1";
+      } else {
+        return "0.5";
       }
     });
 
