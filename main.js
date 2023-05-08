@@ -78,6 +78,32 @@ var xAxisG = chartG
   .attr("transform", "translate(" + [0, chartHeight] + ")");
 var yAxisG = chartG.append("g").attr("class", "y axis");
 document.getElementById("yearSlider").addEventListener("input", onYearSliderChanged);
+function onYearSliderChanged() {
+  let yearSlider = document.getElementById("yearSlider");
+  let yearDisplay = document.getElementById("yearDisplay");
+  let selectedYear = +yearSlider.value;
+  yearDisplay.textContent = selectedYear;
+
+  xScale.domain([chartScales.x[0], selectedYear]);
+  xAxisG
+    .transition()
+    .duration(250)
+    .call(
+      d3
+        .axisBottom(xScale)
+        .ticks(selectedYear - chartScales.x[0])
+        .tickFormat(d3.format(""))
+    );
+
+  chartG.selectAll(".line-path path")
+    .transition()
+    .duration(250)
+    .attr("d", function (d) {
+      let filteredValues = d.values.filter(value => value[0] <= selectedYear);
+      return lineGenerator(filteredValues);
+    });
+}
+
 function updateYearRange(selectedYear) {
   let filteredGlobalSortedData = globalSortedData.map(countryData => {
     let filteredValues = countryData.values.filter(value => value[0] <= selectedYear);
@@ -85,13 +111,6 @@ function updateYearRange(selectedYear) {
   });
 
   updateChart(filteredGlobalSortedData);
-}
-function onYearSliderChanged() {
-  let yearSlider = document.getElementById("yearSlider");
-  let yearDisplay = document.getElementById("yearDisplay");
-  let selectedYear = yearSlider.value;
-  yearDisplay.textContent = selectedYear;
-  updateYearRange(selectedYear);
 }
 d3.json("assignment_4_dataset.json").then(function (data) {
   globalData = data;
@@ -252,6 +271,13 @@ function loadChart() {
 }
 function updateChart(data) {
   let line = chartG.selectAll(".line-path").data(data);
+
+  line.select("path")
+    .transition()
+    .duration(750)
+    .attr("d", function (d) {
+      return lineGenerator(d.values);
+    });
 
   line.remove();
 
