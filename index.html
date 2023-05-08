@@ -23,6 +23,13 @@
       </div>
       <input list="countryList" id="countryInput" placeholder="United States" onchange="onCountryChanged()">
       <datalist id="countryList">
+      </datalist>
+      
+      <!-- Add the slider element below the existing input elements -->
+      <div>
+        <label for="yearSlider">Year range: <span id="yearDisplay">2014</span></label>
+      </div>
+      <input type="range" id="yearSlider" min="2014" max="2022" value="2014" onchange="onYearSliderChanged()" />
     </div>
 
     <div style="margin-left: 225px;">
@@ -32,9 +39,6 @@
   </div>
 </body>
 
-
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v5.min.js"></script>
 <script src="./main.js"></script>
-
-

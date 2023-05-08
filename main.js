@@ -1,4 +1,3 @@
-// when data type is changed
 function onDataChanged() {
   let select = d3.select("#selectData").node();
   let value = select.options[select.selectedIndex].value;
@@ -10,14 +9,12 @@ function onDataChanged() {
   loadChart();
 }
 
-// when country selected in changed
 function onCountryChanged() {
   let select = document.getElementById("countryInput");
   chartScales.country = select.value;
   loadChart();
 }
 
-// gets values for x axis
 function domainChange(value) {
   let valuesList = [
     "gdp",
@@ -51,7 +48,6 @@ function global(value) {
   });
 }
 
-// gets min and max values for y axis
 function yValues() {
   let a = [];
   globalSortedData.forEach(e => {
@@ -81,8 +77,22 @@ var xAxisG = chartG
   .attr("class", "x axis")
   .attr("transform", "translate(" + [0, chartHeight] + ")");
 var yAxisG = chartG.append("g").attr("class", "y axis");
+document.getElementById("yearSlider").addEventListener("input", onYearSliderChanged);
+function updateYearRange(selectedYear) {
+  let filteredGlobalSortedData = globalSortedData.map(countryData => {
+    let filteredValues = countryData.values.filter(value => value[0] <= selectedYear);
+    return { country: countryData.country, values: filteredValues };
+  });
 
-// loads json and updates chart with initial values
+  updateChart(filteredGlobalSortedData);
+}
+function onYearSliderChanged() {
+  let yearSlider = document.getElementById("yearSlider");
+  let yearDisplay = document.getElementById("yearDisplay");
+  let selectedYear = yearSlider.value;
+  yearDisplay.textContent = selectedYear;
+  updateYearRange(selectedYear);
+}
 d3.json("assignment_4_dataset.json").then(function (data) {
   globalData = data;
   globalSortedData = [];
@@ -149,7 +159,6 @@ function filteredData(e, value) {
   return {country: e.country, values: a};
 }
 
-// creates the line
 let lineGenerator = d3
   .line()
   .x(function (d) {
@@ -159,15 +168,18 @@ let lineGenerator = d3
     return yScale(d[1]);
   });
 
-// creates and updates the chart
 function loadChart() {
-
   yScale.domain(chartScales.y).nice();
-  xScale.domain(chartScales.x).nice();
+
+  if (chartScales.yearRange) {
+    xScale.domain(chartScales.yearRange).nice();
+  } else {
+    xScale.domain(chartScales.x).nice();
+  }
 
   xAxisG
-  .transition()
-  .duration(750)
+    .transition()
+    .duration(750)
     .call(
       d3
         .axisBottom(xScale)
@@ -177,17 +189,17 @@ function loadChart() {
   yAxisG.transition().duration(750).call(d3.axisLeft(yScale));
 
   let line = chartG.selectAll(".line-path").data(globalSortedData);
-
   line.remove();
 
   line = chartG.selectAll(".line-path").data(globalSortedData);
+
   chartG
-  .append("text")
-  .attr("class", "axis-label")
-  .attr("x", chartWidth / 2)
-  .attr("y", chartHeight + padding.b - 10)
-  .style("text-anchor", "middle")
-  .text("Year");
+    .append("text")
+    .attr("class", "axis-label")
+    .attr("x", chartWidth / 2)
+    .attr("y", chartHeight + padding.b - 10)
+    .style("text-anchor", "middle")
+    .text("Year");
 
   chartG
     .append("text")
@@ -197,11 +209,74 @@ function loadChart() {
     .attr("transform", "rotate(-90)")
     .style("text-anchor", "middle")
     .text("Value");
-    let lineEnter = line.enter()
+
+  let lineEnter = line.enter()
     .append("g")
     .attr("class", "line-path");
- 
+
+  lineEnter.append("text")
+    .attr("x", 200)
+    .text(function (d) {
+      return d.country;
+    });
+
+  lineEnter
+    .append("path")
+    .attr("id", function(d) {
+      return d.country;
+    })
+    .attr("d", function (d) {
+      return lineGenerator(d.values);
+    })
+    .attr("stroke", function(d) {
+      if (d.country === chartScales.country) {
+        return "orange";
+      } else {
+        return "#69b3a2";
+      }
+    })
+    .attr("stroke-width", function(d) {
+      if (d.country === chartScales.country) {
+        return "3px";
+      } else {
+        return "1.5px";
+      }
+    })
+    .attr("opacity", function(d) {
+      if (d.country === chartScales.country) {
+        return "1";
+      } else {
+        return "0.5";
+      }
+    });
+}
+function updateChart(data) {
+  let line = chartG.selectAll(".line-path").data(data);
+
+  line.remove();
+
+  line = chartG.selectAll(".line-path").data(data);
+  chartG
+    .append("text")
+    .attr("class", "axis-label")
+    .attr("x", chartWidth / 2)
+    .attr("y", chartHeight + padding.b - 10)
+    .style("text-anchor", "middle")
+    .text("Year");
+
+  chartG
+    .append("text")
+    .attr("class", "axis-label")
+    .attr("x", -chartHeight / 2)
+    .attr("y", -padding.l + 20)
+    .attr("transform", "rotate(-90)")
+    .style("text-anchor", "middle")
+    .text("Value");
   
+  let lineEnter = line.enter()
+    .append("g")
+    .attr("class", "line-path");
+
   lineEnter.append("text")
     .attr("x", 200)
     .text(function (d) {
@@ -237,6 +312,4 @@ function loadChart() {
         return "0.5";
       }
     });
-
-  
 }
