@@ -181,10 +181,25 @@ function loadChart() {
   line.remove();
 
   line = chartG.selectAll(".line-path").data(globalSortedData);
+  chartG
+  .append("text")
+  .attr("class", "axis-label")
+  .attr("x", chartWidth / 2)
+  .attr("y", chartHeight + padding.b - 10)
+  .style("text-anchor", "middle")
+  .text("Year");
 
-  let lineEnter = line.enter()
-  .append("g")
-  .attr("class", "line-path");
+  chartG
+    .append("text")
+    .attr("class", "axis-label")
+    .attr("x", -chartHeight / 2)
+    .attr("y", -padding.l + 20)
+    .attr("transform", "rotate(-90)")
+    .style("text-anchor", "middle")
+    .text("Value");
+    let lineEnter = line.enter()
+    .append("g")
+    .attr("class", "line-path");
  
   
   lineEnter.append("text")
